@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
   resources :blogs do
     member do
-      patch :publish
       post :like
+      patch :publish
     end
 
     collection do

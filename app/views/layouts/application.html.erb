@@ -8,25 +8,31 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <header class="navbar">
-      <h1>Blog App</h1>
-      <nav>
-        <%= link_to "Published", blogs_path %>
-        <%= link_to "Drafts", drafts_blogs_path %>
-        <%= link_to "New Blog", new_blog_path %>
-      </nav>
-    </header>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+      <div class="navbar-inner">
+        <h1 class="logo">BlogApp</h1>
 
+        <div class="nav-links">
+          <%= link_to "Published Blogs", blogs_path %>
+          <%= link_to "Draft Blogs", drafts_blogs_path %>
+          <%= link_to "New Blog", new_blog_path %>
+        </div>
+      </div>
+    </nav>
+
+    <!-- CONTENT -->
     <main class="container">
       <% if notice %>
-        <p class="notice"><%= notice %></p>
+        <div class="notice"><%= notice %></div>
       <% end %>
 
       <% if alert %>
-        <p class="alert"><%= alert %></p>
+        <div class="alert"><%= alert %></div>
       <% end %>
 
       <%= yield %>
