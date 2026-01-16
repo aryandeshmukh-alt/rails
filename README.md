@@ -298,3 +298,9 @@ http://localhost:3000
     
 
 * * *
+
+
+
+### Working
+
+[Screencast from 2026-01-16 21-40-15.webm](https://github.com/user-attachments/assets/a259fc83-730b-4e64-bc73-24cdc806a4e7)
