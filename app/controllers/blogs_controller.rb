@@ -1,29 +1,30 @@
 class BlogsController < ApplicationController
   before_action :set_blog, only: [:show, :edit, :update, :destroy, :publish]
 
-  # GET /blogs
-  def index
-    @blogs = Blog.published
+  PER_PAGE = 5
 
-    if params[:search].present?
-      @blogs = @blogs.where("title LIKE ?", "%#{params[:search]}%")
-    end
+  def index
+    page = params[:page].to_i
+    page = 1 if page < 1
+
+    @blogs = Blog.published
+    @blogs = @blogs.where("title LIKE ?", "%#{params[:search]}%") if params[:search].present?
+
+    @blogs = @blogs.offset((page - 1) * PER_PAGE).limit(PER_PAGE)
+
+    @current_page = page
   end
 
-  # GET /blogs/1
   def show
   end
 
-  # GET /blogs/new
   def new
     @blog = Blog.new
   end
 
-  # GET /blogs/1/edit
   def edit
   end
 
-  # POST /blogs
   def create
     @blog = Blog.new(blog_params)
 
@@ -34,7 +35,6 @@ class BlogsController < ApplicationController
     end
   end
 
-  # PATCH/PUT /blogs/1
   def update
     if @blog.update(blog_params)
       redirect_to @blog, notice: "Blog was successfully updated."
@@ -43,13 +43,11 @@ class BlogsController < ApplicationController
     end
   end
 
-  # DELETE /blogs/1
   def destroy
     @blog.destroy
     redirect_to blogs_url, notice: "Blog was successfully destroyed."
   end
 
-  # PATCH /blogs/1/publish
   def publish
     @blog.update(published: true)
     redirect_to @blog, notice: "Blog published successfully."

@@ -17,3 +17,13 @@
 <% if @blogs.empty? %>
   <p><em>No blogs found.</em></p>
 <% end %>
+
+<hr>
+
+<div>
+  <% if @current_page > 1 %>
+    <%= link_to "Previous", blogs_path(page: @current_page - 1, search: params[:search]) %>
+  <% end %>
+
+  <%= link_to "Next", blogs_path(page: @current_page + 1, search: params[:search]) %>
+</div>
