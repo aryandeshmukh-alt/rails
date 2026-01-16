@@ -1,16 +1,19 @@
-<p style="color: green"><%= notice %></p>
-
-<% content_for :title, "Blogs" %>
-
 <h1>Blogs</h1>
 
-<div id="blogs">
-  <% @blogs.each do |blog| %>
-    <%= render blog %>
-    <p>
-      <%= link_to "Show this blog", blog %>
-    </p>
-  <% end %>
-</div>
+<%= form_with url: blogs_path, method: :get, local: true do %>
+  <%= label_tag :search, "Search by title:" %>
+  <%= text_field_tag :search, params[:search] %>
+  <%= submit_tag "Search" %>
+<% end %>
 
-<%= link_to "New blog", new_blog_path %>
+<br>
+
+<%= link_to "New Blog", new_blog_path %>
+
+<hr>
+
+<%= render @blogs %>
+
+<% if @blogs.empty? %>
+  <p><em>No blogs found.</em></p>
+<% end %>
