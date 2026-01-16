@@ -1,19 +1,26 @@
 <h1>Blogs</h1>
 
-<p>
-  <%= link_to "New Blog", new_blog_path %> |
-  <%= link_to "Published Blogs", blogs_path %> |
-  <%= link_to "Draft Blogs", drafts_blogs_path %>
-</p>
-
 <% @blogs.each do |blog| %>
   <%= render blog %>
 <% end %>
 
-<div>
-  <% if @current_page > 1 %>
-    <%= link_to "Previous", blogs_path(page: @current_page - 1) %>
+<div class="pagination">
+  <% prev_page = @current_page - 1 %>
+  <% next_page = @current_page + 1 %>
+
+  <% if prev_page > 0 %>
+    <% if @mode == :drafts %>
+      <%= link_to "Previous", drafts_blogs_path(page: prev_page) %>
+    <% else %>
+      <%= link_to "Previous", blogs_path(page: prev_page) %>
+    <% end %>
   <% end %>
 
-  <%= link_to "Next", blogs_path(page: @current_page + 1) %>
+  <% if @blogs.size == BlogsController::PER_PAGE %>
+    <% if @mode == :drafts %>
+      <%= link_to "Next", drafts_blogs_path(page: next_page) %>
+    <% else %>
+      <%= link_to "Next", blogs_path(page: next_page) %>
+    <% end %>
+  <% end %>
 </div>

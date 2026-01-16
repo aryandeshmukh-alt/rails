@@ -1,17 +1,17 @@
 class BlogsController < ApplicationController
   before_action :set_blog, only: [:show, :edit, :update, :destroy, :publish, :like]
 
-  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
-
   PER_PAGE = 5
 
   def index
     @blogs = Blog.published.order(created_at: :desc)
+    @mode = :published
     paginate
   end
 
   def drafts
     @blogs = Blog.drafts.order(created_at: :desc)
+    @mode = :drafts
     paginate
     render :index
   end
@@ -30,7 +30,7 @@ class BlogsController < ApplicationController
     @blog = Blog.new(blog_params)
 
     if @blog.save
-      redirect_to @blog, notice: "Blog created successfully."
+      redirect_to @blog
     else
       render :new, status: :unprocessable_entity
     end
@@ -38,7 +38,7 @@ class BlogsController < ApplicationController
 
   def update
     if @blog.update(blog_params)
-      redirect_to @blog, notice: "Blog updated successfully."
+      redirect_to @blog
     else
       render :edit, status: :unprocessable_entity
     end
@@ -46,18 +46,23 @@ class BlogsController < ApplicationController
 
   def destroy
     @blog.destroy
-    redirect_to blogs_path, notice: "Blog deleted."
+    redirect_to blogs_path
   end
 
   def publish
     @blog.update(published: true)
-    redirect_to @blog, notice: "Blog published."
+    redirect_to @blog
   end
 
   def like
-    @blog.increment!(:likes_count)
-    redirect_to @blog
+  @blog.increment!(:likes_count)
+
+  respond_to do |format|
+    format.turbo_stream
+    format.html { redirect_to @blog }
   end
+end
+
 
   private
 
@@ -72,11 +77,8 @@ class BlogsController < ApplicationController
   def paginate
     page = params[:page].to_i
     page = 1 if page < 1
+
     @blogs = @blogs.offset((page - 1) * PER_PAGE).limit(PER_PAGE)
     @current_page = page
-  end
-
-  def record_not_found
-    redirect_to blogs_path, alert: "Blog not found."
   end
 end

@@ -1,31 +1,51 @@
 <div class="blog">
-  <h2><%= blog.title %></h2>
+  <!-- TITLE SECTION -->
+  <div class="blog-header">
+    <h2 class="blog-title"><%= blog.title %></h2>
 
-  <p><%= truncate(blog.body, length: 200) %></p>
+    <span class="status <%= blog.published ? 'published' : 'draft' %>">
+      <%= blog.published ? "Published" : "Draft" %>
+    </span>
+  </div>
 
-  <p>
-    Likes: <%= blog.likes_count %>
-  </p>
+  <!-- BODY SECTION -->
+  <div class="blog-content">
+    <p class="blog-body">
+      <%= truncate(blog.body, length: 250) %>
+    </p>
+  </div>
 
-  <%= button_to "Like",
-        like_blog_path(blog),
-        method: :post,
-        data: { turbo: false } %>
+  <!-- LIKE / PUBLISH ROW -->
+  <div class="blog-footer">
+    <% if blog.published %>
+      <div class="like-section">
+        <%= button_to "Like",
+              like_blog_path(blog),
+              method: :post,
+              form: { data: { turbo_stream: true } },
+              class: "like-btn" %>
 
-  <p>
-    <%= link_to "Show", blog %> |
-    <%= link_to "Edit", edit_blog_path(blog) %> |
+        <span class="like-count">
+          ❤️ <span id="likes_<%= blog.id %>"><%= blog.likes_count %></span>
+        </span>
+      </div>
+    <% end %>
+
+    <% unless blog.published %>
+      <%= button_to "Publish",
+            publish_blog_path(blog),
+            method: :patch,
+            data: { turbo: false },
+            class: "publish-btn" %>
+    <% end %>
+  </div>
+
+  <!-- LINKS -->
+  <div class="blog-links">
+    <%= link_to "Show", blog %>
+    <%= link_to "Edit", edit_blog_path(blog) %>
     <%= link_to "Delete", blog,
           method: :delete,
           data: { confirm: "Are you sure?" } %>
-  </p>
-
-  <% unless blog.published %>
-    <%= button_to "Publish",
-          publish_blog_path(blog),
-          method: :patch,
-          data: { turbo: false } %>
-  <% end %>
+  </div>
 </div>
-
-<hr>
