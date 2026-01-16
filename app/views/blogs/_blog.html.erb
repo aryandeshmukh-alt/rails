@@ -1,17 +1,31 @@
-<p>
-  <strong>Title:</strong>
-  <%= blog.title %>
-</p>
+<div class="blog">
+  <h2><%= blog.title %></h2>
 
-<p>
-  <strong>Body:</strong>
-  <%= blog.body %>
-</p>
+  <p><%= truncate(blog.body, length: 200) %></p>
 
-<p>
-  <%= link_to "Show", blog_path(blog) %> |
-  <%= link_to "Edit", edit_blog_path(blog) %> |
-  <%= link_to "Delete", blog_path(blog), method: :delete, data: { confirm: "Are you sure?" } %>
-</p>
+  <p>
+    Likes: <%= blog.likes_count %>
+  </p>
+
+  <%= button_to "Like",
+        like_blog_path(blog),
+        method: :post,
+        data: { turbo: false } %>
+
+  <p>
+    <%= link_to "Show", blog %> |
+    <%= link_to "Edit", edit_blog_path(blog) %> |
+    <%= link_to "Delete", blog,
+          method: :delete,
+          data: { confirm: "Are you sure?" } %>
+  </p>
+
+  <% unless blog.published %>
+    <%= button_to "Publish",
+          publish_blog_path(blog),
+          method: :patch,
+          data: { turbo: false } %>
+  <% end %>
+</div>
 
 <hr>

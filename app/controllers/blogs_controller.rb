@@ -1,31 +1,22 @@
 class BlogsController < ApplicationController
-  before_action :set_blog, only: [:show, :edit, :update, :destroy, :publish]
+  before_action :set_blog, only: [:show, :edit, :update, :destroy, :publish, :like]
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
 
   PER_PAGE = 5
 
   def index
-    page = params[:page].to_i
-    page = 1 if page < 1
+    @blogs = Blog.published.order(created_at: :desc)
+    paginate
+  end
 
-    @blogs = Blog.published
-    @blogs = @blogs.where("title LIKE ?", "%#{params[:search]}%") if params[:search].present?
-    @blogs = @blogs.offset((page - 1) * PER_PAGE).limit(PER_PAGE)
-
-    respond_to do |format|
-      format.html
-      format.json { render json: @blogs }
-    end
-
-    @current_page = page
+  def drafts
+    @blogs = Blog.drafts.order(created_at: :desc)
+    paginate
+    render :index
   end
 
   def show
-    respond_to do |format|
-      format.html
-      format.json { render json: @blog }
-    end
   end
 
   def new
@@ -39,7 +30,7 @@ class BlogsController < ApplicationController
     @blog = Blog.new(blog_params)
 
     if @blog.save
-      redirect_to @blog, notice: "Blog was successfully created."
+      redirect_to @blog, notice: "Blog created successfully."
     else
       render :new, status: :unprocessable_entity
     end
@@ -47,7 +38,7 @@ class BlogsController < ApplicationController
 
   def update
     if @blog.update(blog_params)
-      redirect_to @blog, notice: "Blog was successfully updated."
+      redirect_to @blog, notice: "Blog updated successfully."
     else
       render :edit, status: :unprocessable_entity
     end
@@ -55,12 +46,17 @@ class BlogsController < ApplicationController
 
   def destroy
     @blog.destroy
-    redirect_to blogs_url, notice: "Blog was successfully destroyed."
+    redirect_to blogs_path, notice: "Blog deleted."
   end
 
   def publish
     @blog.update(published: true)
-    redirect_to @blog, notice: "Blog published successfully."
+    redirect_to @blog, notice: "Blog published."
+  end
+
+  def like
+    @blog.increment!(:likes_count)
+    redirect_to @blog
   end
 
   private
@@ -73,10 +69,14 @@ class BlogsController < ApplicationController
     params.require(:blog).permit(:title, :body)
   end
 
+  def paginate
+    page = params[:page].to_i
+    page = 1 if page < 1
+    @blogs = @blogs.offset((page - 1) * PER_PAGE).limit(PER_PAGE)
+    @current_page = page
+  end
+
   def record_not_found
-    respond_to do |format|
-      format.html { redirect_to blogs_path, alert: "Blog not found." }
-      format.json { render json: { error: "Blog not found" }, status: :not_found }
-    end
+    redirect_to blogs_path, alert: "Blog not found."
   end
 end
