@@ -1,12 +1,17 @@
-<div id="<%= dom_id blog %>">
-  <div>
-    <strong>Title:</strong>
-    <%= blog.title %>
-  </div>
+<p>
+  <strong>Title:</strong>
+  <%= blog.title %>
+</p>
 
-  <div>
-    <strong>Body:</strong>
-    <%= blog.body %>
-  </div>
+<p>
+  <strong>Body:</strong>
+  <%= blog.body %>
+</p>
 
-</div>
+<p>
+  <%= link_to "Show", blog_path(blog) %> |
+  <%= link_to "Edit", edit_blog_path(blog) %> |
+  <%= link_to "Delete", blog_path(blog), method: :delete, data: { confirm: "Are you sure?" } %>
+</p>
+
+<hr>

@@ -1,10 +1,45 @@
-<p style="color: green"><%= notice %></p>
+<p>
+  <strong>Title:</strong>
+  <%= @blog.title %>
+</p>
 
-<%= render @blog %>
+<p>
+  <strong>Body:</strong>
+  <%= @blog.body %>
+</p>
 
-<div>
-  <%= link_to "Edit this blog", edit_blog_path(@blog) %> |
-  <%= link_to "Back to blogs", blogs_path %>
+<% unless @blog.published? %>
+  <%= button_to "Publish Blog", publish_blog_path(@blog), method: :patch %>
+<% end %>
 
-  <%= button_to "Destroy this blog", @blog, method: :delete %>
-</div>
+<hr>
+
+<h3>Comments</h3>
+
+<% @blog.comments.each do |comment| %>
+  <p>
+    <%= comment.body %>
+    <%= button_to "Delete",
+                  blog_comment_path(@blog, comment),
+                  method: :delete,
+                  data: { confirm: "Are you sure?" } %>
+  </p>
+<% end %>
+
+<% if @blog.published? %>
+  <h4>Add Comment</h4>
+
+  <%= form_with(model: [@blog, Comment.new]) do |form| %>
+    <p>
+      <%= form.text_area :body %>
+    </p>
+
+    <%= form.submit "Add Comment" %>
+  <% end %>
+<% else %>
+  <p><em>Comments are allowed only after publishing.</em></p>
+<% end %>
+
+<br>
+
+<%= link_to "Back", blogs_path %>
